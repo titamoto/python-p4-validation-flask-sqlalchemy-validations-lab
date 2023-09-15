@@ -12,6 +12,18 @@ class Author(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
+    @validates('name')
+    def validate_name(self, key, name):
+        if name == '':
+            raise ValueError('Name is required')
+        return name
+
+    @validates('phone_number')
+    def validate_phone(self, key, phone):
+        if len(phone) != 10:
+            raise ValueError('Phone number is not 10 digits')
+        return phone
+
     def __repr__(self):
         return f'Author(id={self.id}, name={self.name})'
 
@@ -27,6 +39,23 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
+    @validates('title')
+    def validate_title(self, key, title):
+        if title not in ["Won't Believe", "Secret", "Top", "Guess"]:
+            raise ValueError('There is should be a title')
+        return title
+
+    @validates('summary')
+    def validate_summary(self, key, summary):
+        if len(summary) >= 250:
+            raise ValueError('Post summary should be no more 250 characters long')
+        return summary
+
+    @validates('category')
+    def validate_category(self, key, category):
+        if category not in ['Fiction', 'Non-Fiction']:
+            raise ValueError('Post category should be either Fiction or Non-Fiction')
+        return category
 
     def __repr__(self):
         return f'Post(id={self.id}, title={self.title} content={self.content}, summary={self.summary})'
